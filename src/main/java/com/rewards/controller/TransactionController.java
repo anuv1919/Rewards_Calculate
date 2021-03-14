@@ -20,10 +20,18 @@ public class TransactionController {
     @Autowired
     RewardsService rewardsService;
 
-    @GetMapping("/rewards/{userid}")
-    HttpEntity<TransactionResultRepresentation> rewards(@PathVariable String userid) {
+    @GetMapping("/rewards/v1/{userid}")
+    HttpEntity<TransactionResultRepresentation> rewardsbyTransumByMonth(@PathVariable String userid) {
 
-        RewardsResult rewardsResult = rewardsService.getRewards(userid);
+        RewardsResult rewardsResult = rewardsService.getRewardsByTran(userid);
+        logger.info("Results are {}", rewardsResult.toString());
+        TransactionResultRepresentation representation = new TransactionResultRepresentation(rewardsResult);
+        return new ResponseEntity<>(representation, HttpStatus.OK);
+    }
+    @GetMapping("/rewards/v2/{userid}")
+    HttpEntity<TransactionResultRepresentation> rewardsSummingByMonth(@PathVariable String userid) {
+
+        RewardsResult rewardsResult = rewardsService.getRewardsByMonth(userid);
         logger.info("Results are {}", rewardsResult.toString());
         TransactionResultRepresentation representation = new TransactionResultRepresentation(rewardsResult);
         return new ResponseEntity<>(representation, HttpStatus.OK);

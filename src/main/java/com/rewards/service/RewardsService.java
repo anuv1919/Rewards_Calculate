@@ -6,7 +6,6 @@ import com.rewards.model.MonthlyRewards;
 import com.rewards.model.RewardsResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
@@ -28,11 +27,10 @@ public class RewardsService {
      * @param userid
      * @return
      */
-    public RewardsResult getRewards(String userid) {
+    public RewardsResult getRewardsByMonth(String userid) {
         List<DailyTransaction> dailyTransactions = transactionDao.getRewards(userid, 0);
         RewardsResult result = new RewardsResult();
-        Map<String, Double> resMap = dailyTransactions.stream()
-                                                          .collect(Collectors.groupingBy(RewardsService::format,Collectors.summingDouble(DailyTransaction::getAmount)));
+        Map<String, Double> resMap = dailyTransactions.stream().collect(Collectors.groupingBy(RewardsService::format,Collectors.summingDouble(DailyTransaction::getAmount)));
         List<MonthlyRewards> monthlyRewardsList = resMap.entrySet().stream().map(kv -> {
             MonthlyRewards monthlyRewards = new MonthlyRewards();
             monthlyRewards.setMonth(kv.getKey());
@@ -44,10 +42,38 @@ public class RewardsService {
         return result;
     }
 
+    public RewardsResult getRewardsByTran(String userid) {
+        List<DailyTransaction> dailyTransactions = transactionDao.getRewards(userid, 0);
+        RewardsResult result = new RewardsResult();
+        Map<String, Integer> resMap = dailyTransactions.stream().collect(Collectors.groupingBy(RewardsService::format,Collectors.summingInt(RewardsService::computeRewardsByTran)));
+                                                          
+        List<MonthlyRewards> monthlyRewardsList = resMap.entrySet().stream().map(kv -> {
+            MonthlyRewards monthlyRewards = new MonthlyRewards();
+            monthlyRewards.setMonth(kv.getKey());
+            monthlyRewards.setRewards(kv.getValue());
+            return monthlyRewards;
+        }).collect(Collectors.toList());
+        result.setMonthlyRewardsList(monthlyRewardsList);
+        result.setTotalRewards(monthlyRewardsList.stream().map(rewards -> rewards.getRewards()).reduce(0,Integer::sum));
+        return result;
+    }
 
     private static String format(DailyTransaction dailyTxn) {
 
         return dateFormat.format(dailyTxn.getTxnDate());
+    }
+    
+    private static int computeRewardsByTran(DailyTransaction dailyTxn){
+
+        if(dailyTxn.getAmount() < 100 && dailyTxn.getAmount()  > 50){
+            return (int) (dailyTxn.getAmount() -50);
+        }
+        else if(dailyTxn.getAmount() >100){
+
+            return 50 + ((int) (dailyTxn.getAmount() -100)) *2;
+        }
+
+        return 0;
     }
 
     private static int computeRewards(Double amount){
