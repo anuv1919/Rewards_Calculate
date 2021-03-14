@@ -1,54 +1,31 @@
-## API's 
+A retailer offers a rewards program to its customers, awarding points based on each recorded purchase.
 
-The following list of API's are exposed by the application. Sample API invocations are available as part of the test/resources/arc.json
+A customer receives 2 points for every dollar spent over $100 in each transaction, plus 1 point for every dollar spent over $50 in each transaction
 
-1. Create Enrollee 
-   
-   * Context Path : /enrollee
-   
-   * Http Method  : Post
-    
-2. Get Enrollee
+(e.g. a $120 purchase = 2x$20 + 1x$50 = 90 points).
 
-    * Context Path : /enrollee/{id}
+Given a record of every transaction during a three month period, calculate the reward points earned for each customer per month and total.
 
-    * Http Method  : Get
+**Based on the above question, I have two versions of API's created:
+**
+**Version-1**
 
-3. Delete Enrollee
+Assuming we need to calculate the rewards per transaction and calculated the rewards points per transaction accumulating as per month and total.
 
-    * Context Path : /enrollee/{id}
+Use postman or any HTTP client to hit the endpoint as below:
 
-    * Http Method  : Post
-    
-4. Update Enrollee
+http://localhost:8080/rewards/v1/{user_ID}
+example: http://localhost:8080/rewards/v1/bob
 
-    * Context Path : /enrollee/{id}
 
-    * Http Method  : Post
-    
-5. Create Dependant
+**Version-2**
 
-    * Context Path : /enrollee/{id}/dependants
+Assuming we need to calculate the total transactions amounts per each month, and then calculating the rewards per total amount per month.
 
-    * Http Method  : Post
-    
-6. Delete All Dependants
+Use postman or any HTTP client to hit the endpoint as below:
 
-    * Context Path : /enrollee/{id}/
-
-    * Http Method  : Delete
-    
-7. Delete a Dependant
-
-    * Context Path : /enrollee/{id}/dependants/{dependantId}
-
-    * Http Method  : Delete
-    
-8. Update a Dependant
-
-    * Context Path : /enrollee/{id}/dependants/{dependantId}
-
-    * Http Method  : Post
+http://localhost:8080/rewards/v2/{user_ID}
+example: http://localhost:8080/rewards/v2/bob
 
 
 
